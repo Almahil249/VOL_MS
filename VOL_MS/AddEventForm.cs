@@ -74,6 +74,9 @@ namespace VOL_MS
                 MessageBox.Show("Please enter the event name");
                 return;
             }
+            //remove all spaces from the event name and replace them with underscores
+            EventName.Text = EventName.Text.Replace(" ", "_");
+
             //check if the event name already exists in the database
             conn.Open();
             cmd = new SqlCommand("SELECT * FROM sys.tables WHERE name = '" + EventName.Text + "'", conn);

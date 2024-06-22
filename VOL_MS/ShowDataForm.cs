@@ -21,6 +21,8 @@ namespace VOL_MS
         static SqlCommand cmd1;
         static SqlDataReader dr;
         string[] tableNames1;
+        System.Data.DataTable dtAllVOL = new System.Data.DataTable();
+
         public ShowDataForm()
         {
             InitializeComponent();
@@ -63,45 +65,27 @@ namespace VOL_MS
 
         }
 
-        public void LoadRecords(string TableName, DataGridView resultDataGrid)
-        {
-            resultDataGrid.Rows.Clear();
-            int i = 0;
-            conn.Open();
-            cmd = new SqlCommand("select * from [" + TableName + "]", conn);
-            dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                i++;
-                resultDataGrid.Rows.Add(dr["Name"].ToString(), dr["V_ID"].ToString(), dr["Phone"].ToString(), dr["TotalHours"], " ");
-
-            }
-            dr.Close();
-            conn.Close();
-        }
-
-
-        private void LoadChildFormIntoPanel(Form childForm)
-        {
-            panelContent.Controls.Clear();
-
-
-            childForm.TopLevel = false;
-            childForm.FormBorderStyle = FormBorderStyle.None;
-            childForm.Dock = DockStyle.Fill;
-            panelContent.Controls.Add(childForm);
-            childForm.Show();
-        }
 
         private void LoadChildDataGridIntoPanel(DataGridView childDataGridView, string eventName)
         {
+            dtAllVOL.Clear();
             panelContent.Controls.Clear();
-
             childDataGridView.Rows.Clear();
+            childDataGridView.Columns.Clear();
+            childDataGridView.AllowUserToAddRows = false;
+            childDataGridView.AllowUserToDeleteRows = false;
             childDataGridView.Dock = DockStyle.Fill;
             panelContent.Controls.Add(childDataGridView);
-            LoadRecords(eventName, childDataGridView);
+            
 
+            SqlDataAdapter da = new SqlDataAdapter("select * from [" + eventName + "]", conn);
+            da.Fill(dtAllVOL);
+            childDataGridView.DataSource = dtAllVOL;
+            //set all the columns to read only
+            for (int i = 0; i < childDataGridView.Columns.Count; i++)
+            {
+                childDataGridView.Columns[i].ReadOnly = true;
+            }
             childDataGridView.Show();
 
             //export the data to a xlsx file
@@ -126,34 +110,21 @@ namespace VOL_MS
                 {
                     for (int j = 0; j < childDataGridView.Columns.Count; j++)
                     {
-                        // ws.Cells[i + 2, j + 1] = childDataGridView.Rows[i].Cells[j].Value.ToString(); format the cell to text
                         ws.Cells[i + 2, j + 1].NumberFormat = "@";
                         ws.Cells[i + 2, j + 1] = childDataGridView.Rows[i].Cells[j].Value.ToString();
-
                     }
                 }
-
                 // save the file
                 wb.SaveAs(path);
                 wb.Close();
                 excel.Quit();
                 MessageBox.Show("Data exported successfully");
 
-
             }
-
-
-
-
         }
 
 
         private void labelTitle_Click(object sender, EventArgs e)
-        {
-            panelContent.Controls.Clear();
-
-        }
-        private void panelTitle_Paint(object sender, PaintEventArgs e)
         {
             panelContent.Controls.Clear();
         }
@@ -167,10 +138,8 @@ namespace VOL_MS
             {
                 tableCount = Convert.ToInt32(dr[0]);
             }
-
             dr.Close();
             conn.Close();
-
             // get the names of the tables
             string[] tableNames = new string[tableCount];
             conn.Open();
@@ -182,7 +151,6 @@ namespace VOL_MS
                 tableNames[i] = dr[0].ToString();
                 i++;
             }
-
             dr.Close();
             conn.Close();
 
@@ -205,7 +173,7 @@ namespace VOL_MS
         private void EventsComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // change the text of the ShowButton to the name of the selected event from the EventsComboBox
-            ShowButton.Text = "Show and Save as Excel : " + EventsComboBox.Text;
+            ShowButton.Text = "Show and Save as Excel : " + EventsComboBox.Text.ToString();
             DeleteEvent.Visible = true;
         }
 
@@ -216,33 +184,11 @@ namespace VOL_MS
             //check if the event name not empty and if the event name is in the tableNames 
             if (eventName != "" && EventsComboBox.Items.Contains(eventName))
             {
-                // create a new DataGridView in the panelContent and display the data using the LoadRecords
-
                 DataGridView dataGridView = new DataGridView();
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.AllowUserToDeleteRows = false;
-                dataGridView.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
-                dataGridView.ColumnHeadersHeight = 29;
-                dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-                dataGridView.Location = new System.Drawing.Point(0, 250);
-                dataGridView.Name = "resultDataGrid";
-                dataGridView.ReadOnly = true;
-                dataGridView.RowHeadersVisible = false;
-                dataGridView.RowHeadersWidth = 51;
-                dataGridView.RowTemplate.Height = 24;
-                dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                dataGridView.Size = new System.Drawing.Size(817, 175);
-                dataGridView.Columns.Add("Name", "Name");
-                dataGridView.Columns.Add("V_ID", "V_ID");
-                dataGridView.Columns.Add("Phone", "Phone");
-                dataGridView.Columns.Add("TotalHours", "TotalHours");
-                dataGridView.Columns.Add("EventName", "Event Name: " + eventName);
-
-
 
                 LoadChildDataGridIntoPanel(dataGridView, eventName);
-
-
             }
             else
             {

@@ -19,19 +19,31 @@ namespace VOL_MS
         static SqlCommand cmd1;
         static SqlDataReader dr;
 
-
-
         public MainForm()
         {
             InitializeComponent();
             LoadChildFormIntoPanel(new HomeForm());
-            conn = new SqlConnection(ConnectionDB.GetConnectionString());
-            
+            conn = new SqlConnection(ConnectionDB.GetConnectionString());            
         }
-
 
         public void LoadChildFormIntoPanel(Form childForm)
         {
+            // check if the panelContent has any form
+            if (panelContent.Controls.Count > 0)
+            {
+                // get the name of the form and check if it is ManageEventForm call    ManageEventForm_FormClosing() it is a public method
+                string formName = panelContent.Controls[0].Name;
+                if (formName == "ManageEventForm")
+                {
+                    ManageEventForm form1 = panelContent.Controls[0] as ManageEventForm;
+                    form1.ManageEventForm_FormClosing();
+                }
+
+                // if it has close the form
+                Form form = panelContent.Controls[0] as Form;
+                form.Close();
+            }
+
             panelContent.Controls.Clear();
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
@@ -45,6 +57,7 @@ namespace VOL_MS
             LoadChildFormIntoPanel(new HomeForm());
             PopulateComboBox();
         }
+
         private void panelTitle_Paint(object sender, PaintEventArgs e)
         {
             //LoadChildFormIntoPanel(new HomeForm());
@@ -60,19 +73,16 @@ namespace VOL_MS
         private void buttonShowData_Click(object sender, EventArgs e)
         {
             LoadChildFormIntoPanel(new ShowDataForm());
-
         }
 
         private void buttonAddEvent_Click(object sender, EventArgs e)
         {
             LoadChildFormIntoPanel(new AddEventForm());
-
         }
 
         private void buttonManageEvents_Click(object sender, EventArgs e)
         {
             string eventName = EventsComboBox.Text;
-
             if (eventName != "" && EventsComboBox.Items.Contains(eventName))
             {
                 LoadChildFormIntoPanel(new ManageEventForm(eventName));
@@ -81,15 +91,12 @@ namespace VOL_MS
             {
                 MessageBox.Show("Please select an event from the list");
             }
-
         }
 
         private void PopulateComboBox()
         {
             // clear the combobox
             EventsComboBox.Items.Clear();
-
-
             int tableCount = 0;
 
             conn.Open();

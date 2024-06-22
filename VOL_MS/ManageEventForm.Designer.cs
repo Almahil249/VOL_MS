@@ -73,6 +73,7 @@
             this.AddVol.TabIndex = 0;
             this.AddVol.Text = "Add Volunteer";
             this.AddVol.UseVisualStyleBackColor = true;
+            this.AddVol.Click += new System.EventHandler(this.AddVol_Click);
             // 
             // CheckOutAll
             // 

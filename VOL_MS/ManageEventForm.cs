@@ -235,10 +235,10 @@ namespace VOL_MS
 
         }
 
-        private void CheckOutAll_Click(object sender, EventArgs e)
+        private void CheckOutAll_Vol()
         {
-            while (ActiveDataGrid.Rows.Count > 0) 
-            { 
+            while (ActiveDataGrid.Rows.Count > 0)
+            {
                 int iRowIndex = 0;
                 //add the current date and time to the "Check Out" column in the ActiveDataGrid (indix 6)
                 //and subtract the "Check IN" date and time from the "Check Out" date and time and add the result to the "Today's Hours" column  (index 4)
@@ -289,7 +289,12 @@ namespace VOL_MS
             }
         }
 
-        private void SaveRecords_Click(object sender, EventArgs e)
+        private void CheckOutAll_Click(object sender, EventArgs e)
+        {
+            CheckOutAll_Vol();
+        }
+
+        private void Save_Records() 
         {
             //save each data grid view to a separate sheet in one excel file named EventName_Date_Shift.xlsx
             Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
@@ -330,24 +335,6 @@ namespace VOL_MS
             ws.Activate();
             ws.Select();
 
-
-            /*
-            Worksheet ws2 = wb.Sheets.Add();
-            ws2.Name = "Attended Volunteers";
-            for (int i = 1; i < AttendedGridView.Columns.Count + 1; i++)
-            {
-                ws2.Cells[1, i] = AttendedGridView.Columns[i - 1].HeaderText;
-            }
-
-            for (int i = 0; i < AttendedGridView.Rows.Count; i++)
-            {
-                for (int j = 0; j < AttendedGridView.Columns.Count; j++)
-                {
-                    ws2.Cells[i + 2, j + 1].NumberFormat = "@";
-                    ws2.Cells[i + 2, j + 1] = AttendedGridView.Rows[i].Cells[j].Value.ToString();
-                }
-            }*/
-
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
             saveFileDialog.FileName = EventName + "_" + Now.ToString("dd_MM_yyyy") + "_Shift.xlsx";
@@ -357,11 +344,57 @@ namespace VOL_MS
                 MessageBox.Show("Saved!");
             }
             excel.Quit();
-
-
-
-
-
         }
+
+        private void SaveRecords_Click(object sender, EventArgs e)
+        {
+            Save_Records();
+        }
+
+        private void AddVol_Click(object sender, EventArgs e)
+        {
+            // prompt the user to enter the volunteer's Name, V_ID and Phone
+            AddVolunteerForm addVolunteerForm = new AddVolunteerForm(EventName);
+            addVolunteerForm.ShowDialog();
+            // when the user claoses the AddVolunteerForm, update the AllVolDataGrid with the new volunteer's data from the form 
+            // there in public bool isVolunteerAdded if it is true then add the new volunteer to the AllVolDataGrid
+            // there are public strings VolID, VolPhone, VolName that store the new volunteer's data
+            if (addVolunteerForm.isVolunteerAdded)
+            {
+                dtAllVOL.Rows.Add(addVolunteerForm.VolName, addVolunteerForm.VolPhone, addVolunteerForm.VolID, 0);
+                AllVolDataGrid.DataSource = dtAllVOL;
+                for (int i = 0; i < AllVolDataGrid.Columns.Count; i++)
+                {
+                    AllVolDataGrid.Columns[i].ReadOnly = true;
+                }
+            }
+        }
+
+        // when the user closes the ManageEventForm, check if the user wants to save the data or not
+        public void ManageEventForm_FormClosing()
+        {
+            // check if the ActiveDataGrid is empty or not
+            if (ActiveDataGrid.Rows.Count > 0)
+            {
+                
+                DialogResult result = MessageBox.Show("Do you want to save the data? Else Check Out All Volunteers in this shift ", "Save Data", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    Save_Records();
+                }
+                else
+                {
+                    CheckOutAll_Vol();
+                    MessageBox.Show("Checked Out All Volunteers!");
+                }
+
+
+            }
+        }
+
     }
+
 }
+
+

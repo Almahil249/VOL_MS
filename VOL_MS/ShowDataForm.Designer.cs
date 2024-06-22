@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowDataForm));
             this.panelMenu = new System.Windows.Forms.Panel();
+            this.DeleteEvent = new System.Windows.Forms.Button();
             this.ShowButton = new System.Windows.Forms.Button();
             this.EventsComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -38,7 +39,6 @@
             this.panelTitle = new System.Windows.Forms.Panel();
             this.labelTitle = new System.Windows.Forms.Label();
             this.panelContent = new System.Windows.Forms.Panel();
-            this.DeleteEvent = new System.Windows.Forms.Button();
             this.panelMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AllEventsDataGrid)).BeginInit();
             this.panelTitle.SuspendLayout();
@@ -59,11 +59,23 @@
             this.panelMenu.Size = new System.Drawing.Size(281, 653);
             this.panelMenu.TabIndex = 0;
             // 
+            // DeleteEvent
+            // 
+            this.DeleteEvent.BackColor = System.Drawing.Color.Red;
+            this.DeleteEvent.Location = new System.Drawing.Point(17, 610);
+            this.DeleteEvent.Name = "DeleteEvent";
+            this.DeleteEvent.Size = new System.Drawing.Size(66, 31);
+            this.DeleteEvent.TabIndex = 4;
+            this.DeleteEvent.Text = "Delete Event";
+            this.DeleteEvent.UseVisualStyleBackColor = false;
+            this.DeleteEvent.Visible = false;
+            this.DeleteEvent.Click += new System.EventHandler(this.DeleteEvent_Click);
+            // 
             // ShowButton
             // 
-            this.ShowButton.Location = new System.Drawing.Point(17, 523);
+            this.ShowButton.Location = new System.Drawing.Point(17, 519);
             this.ShowButton.Name = "ShowButton";
-            this.ShowButton.Size = new System.Drawing.Size(248, 41);
+            this.ShowButton.Size = new System.Drawing.Size(248, 71);
             this.ShowButton.TabIndex = 3;
             this.ShowButton.Text = "Show";
             this.ShowButton.UseVisualStyleBackColor = true;
@@ -118,7 +130,6 @@
             this.panelTitle.Name = "panelTitle";
             this.panelTitle.Size = new System.Drawing.Size(281, 83);
             this.panelTitle.TabIndex = 0;
-            this.panelTitle.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTitle_Paint);
             // 
             // labelTitle
             // 
@@ -140,18 +151,6 @@
             this.panelContent.Name = "panelContent";
             this.panelContent.Size = new System.Drawing.Size(905, 653);
             this.panelContent.TabIndex = 1;
-            // 
-            // DeleteEvent
-            // 
-            this.DeleteEvent.BackColor = System.Drawing.Color.Red;
-            this.DeleteEvent.Location = new System.Drawing.Point(17, 596);
-            this.DeleteEvent.Name = "DeleteEvent";
-            this.DeleteEvent.Size = new System.Drawing.Size(66, 31);
-            this.DeleteEvent.TabIndex = 4;
-            this.DeleteEvent.Text = "Delete Event";
-            this.DeleteEvent.UseVisualStyleBackColor = false;
-            this.DeleteEvent.Visible = false;
-            this.DeleteEvent.Click += new System.EventHandler(this.DeleteEvent_Click);
             // 
             // ShowDataForm
             // 
