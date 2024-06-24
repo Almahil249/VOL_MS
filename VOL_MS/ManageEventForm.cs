@@ -318,23 +318,22 @@ namespace VOL_MS
 
             Worksheet ws1 = wb.Sheets.Add();
             ws1.Name = "Active Volunteers";
-            for (int i = 1; i < ActiveDataGrid.Columns.Count + 1; i++)
+            for (int i = 1; i < ActiveDataGrid.Columns.Count ; i++)
             {
-                ws1.Cells[1, i] = ActiveDataGrid.Columns[i - 1].HeaderText;
+                ws1.Cells[1, i] = ActiveDataGrid.Columns[i].HeaderText;
             }
             for (int i = 0; i < ActiveDataGrid.Rows.Count; i++)
             {
-                for (int j = 0; j < ActiveDataGrid.Columns.Count; j++)
+                for (int j = 1; j < ActiveDataGrid.Columns.Count; j++)
                 {
-                    ws1.Cells[i + 2, j + 1].NumberFormat = "@";
-                    ws1.Cells[i + 2, j + 1] = ActiveDataGrid.Rows[i].Cells[j].Value.ToString();
+                    ws1.Cells[i + 2, j ].NumberFormat = "@";
+                    ws1.Cells[i + 2, j ] = ActiveDataGrid.Rows[i].Cells[j].Value.ToString();
                 }
             }
 
             //set the Attended Volunteers as the active sheet (the first sheet)
             ws.Activate();
             ws.Select();
-
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
             saveFileDialog.FileName = EventName + "_" + Now.ToString("dd_MM_yyyy") + "_Shift.xlsx";
@@ -393,6 +392,154 @@ namespace VOL_MS
             }
         }
 
+        private void RecoverExcel_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Do you want to recover the data from an excel file?", "Recover Data", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                //check if the ActiveDataGrid is empty or not
+                if (ActiveDataGrid.Rows.Count > 0)
+                {
+                    DialogResult result1 = MessageBox.Show("Warning! All the current data will be lost It is recommended to Check Out All Volunteers before performing this action", "Check Out All ", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result1 == DialogResult.Yes)
+                    {
+                        CheckOutAll_Vol();
+                        MessageBox.Show("Checked Out All Volunteers!");
+                    }
+                }
+
+                // clear the data in the ActiveDataGrid 
+                dtActiveVOL.Clear();
+                ActiveDataGrid.DataSource = dtActiveVOL;
+
+                // let the user choose the excel file to recover the data from it
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+
+
+                //check if the user selected a file or not then validate the file name EventName_DD_MM_YYYY_Shift if it is valid then recover the data from the file
+
+                if(openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = openFileDialog.FileName;
+                    // get file name without the path
+                    fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
+                    //get the shift date from the file name (the date is in the format DD_MM_YYYY and it srarts from the 16th character from the end of the file name)
+                    // Split the string by underscore
+                    string[] parts = fileName.Split('_');
+                    // Assuming the date is always the second to last element
+                    int datePartIndex = parts.Length - 4; // Adjust the index based on the fixed position of the date
+                    
+                    string EventNameFromFile = string.Join("_", parts.Take(datePartIndex));
+                    string dateFromFile = $"{parts[datePartIndex]}_{parts[datePartIndex + 1]}_{parts[datePartIndex + 2]}";
+
+
+
+
+
+                    if (EventNameFromFile == EventName && dateFromFile == Now.ToString("dd_MM_yyyy"))
+                    {
+                        try
+                        {
+                            // open the excel file and read the data from the Active Volunteers sheet and the Attended Volunteers sheet
+                            //ignore the first row in each sheet because it contains the column names 
+                            //add the data from the Active Volunteers sheet to the ActiveDataGrid and dtActiveVOL
+                            // appned the data from the Attended Volunteers sheet to the AttendedGridView and dtAttendedVOL
+                            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+                            Workbook wb = excel.Workbooks.Open(openFileDialog.FileName);
+                            Worksheet ws = (Worksheet)wb.Sheets[1];
+                            int i = 2;
+                            while (ws.Cells[i, 1].Value != null)
+                            {
+                                dtActiveVOL.Rows.Add(ws.Cells[i, 1].Value.ToString(), ws.Cells[i, 2].Value.ToString(), ws.Cells[i, 3].Value.ToString(), ws.Cells[i, 4].Value.ToString(), ws.Cells[i, 5].Value.ToString(), ws.Cells[i, 6].Value.ToString(), ws.Cells[i, 7].Value.ToString());
+                                i++;
+                            }
+                            ActiveDataGrid.DataSource = dtActiveVOL;
+                            for (int j = 0; j < ActiveDataGrid.Columns.Count; j++)
+                            {
+                                ActiveDataGrid.Columns[j].ReadOnly = true;
+                            }
+
+                            Worksheet ws1 = (Worksheet)wb.Sheets[2];
+                            i = 2;
+                            while (ws1.Cells[i, 1].Value != null)
+                            {
+                                dtAttendedVOL.Rows.Add(ws1.Cells[i, 1].Value.ToString(), ws1.Cells[i, 2].Value.ToString(), ws1.Cells[i, 3].Value.ToString(), ws1.Cells[i, 4].Value.ToString(), ws1.Cells[i, 5].Value.ToString(), ws1.Cells[i, 6].Value.ToString(), ws1.Cells[i, 7].Value.ToString());
+                                i++;
+                            }
+                            AttendedGridView.DataSource = dtAttendedVOL;
+                            for (int j = 0; j < AttendedGridView.Columns.Count; j++)
+                            {
+                                AttendedGridView.Columns[j].ReadOnly = true;
+                            }
+                            wb.Close();
+                            excel.Quit();
+                            //remove all the data that was recovered from the excel file from the AllVolDataGrid
+                            for (int j = 0; j < dtActiveVOL.Rows.Count; j++)
+                            {
+                                for (int k = 0; k < dtAllVOL.Rows.Count; k++)
+                                {
+                                    if (dtActiveVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
+                                    {
+                                        dtAllVOL.Rows.RemoveAt(k);
+                                        AllVolDataGrid.DataSource = dtAllVOL;
+                                        for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                        {
+                                            AllVolDataGrid.Columns[l].ReadOnly = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            for (int j = 0; j < dtAttendedVOL.Rows.Count; j++)
+                            {
+                                for (int k = 0; k < dtAllVOL.Rows.Count; k++)
+                                {
+                                    if (dtAttendedVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
+                                    {
+                                        dtAllVOL.Rows.RemoveAt(k);
+                                        AllVolDataGrid.DataSource = dtAllVOL;
+                                        for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                        {
+                                            AllVolDataGrid.Columns[l].ReadOnly = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            MessageBox.Show("Recovered!");
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        if(EventNameFromFile != EventName)
+                        {
+                            MessageBox.Show("The Event Name in the file does not match the current Event Name!");
+                        }
+                        else if(dateFromFile != Now.ToString("dd_MM_yyyy"))
+                        {
+                            MessageBox.Show("The Date in the file does not match the current Date!");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Invalid File Name!");
+                        }
+                    }
+
+                }
+
+
+
+
+            }
+        }
     }
 
 }

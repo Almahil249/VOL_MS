@@ -88,39 +88,54 @@ namespace VOL_MS
             }
             childDataGridView.Show();
 
-            //export the data to a xlsx file
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
-            saveFileDialog.FileName = eventName + ".xlsx";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            //prompt the user to ask if they want to save the data as an excel file
+            DialogResult dialogResult = MessageBox.Show("Do you want to save the data as an excel file?", "Save as Excel", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
             {
-                string path = saveFileDialog.FileName;
-                Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
-                Workbook wb = excel.Workbooks.Add(XlSheetType.xlWorksheet);
-                Worksheet ws = (Worksheet)excel.ActiveSheet;
 
-                // storing header part in Excel
-                for (int i = 1; i < childDataGridView.Columns.Count + 1; i++)
+                //export the data to a xlsx file
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+                saveFileDialog.FileName = eventName + ".xlsx";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    ws.Cells[1, i] = childDataGridView.Columns[i - 1].HeaderText;
-                }
+                    string path = saveFileDialog.FileName;
+                    Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+                    Workbook wb = excel.Workbooks.Add(XlSheetType.xlWorksheet);
+                    Worksheet ws = (Worksheet)excel.ActiveSheet;
+                    // renaming the sheet name
+                    ws.Name = eventName+" All Data";
 
-                // storing Each row and column value to excel sheet
-                for (int i = 0; i < childDataGridView.Rows.Count ; i++)
-                {
-                    for (int j = 0; j < childDataGridView.Columns.Count; j++)
+                    // storing header part in Excel
+                    for (int i = 1; i < childDataGridView.Columns.Count + 1; i++)
                     {
-                        ws.Cells[i + 2, j + 1].NumberFormat = "@";
-                        ws.Cells[i + 2, j + 1] = childDataGridView.Rows[i].Cells[j].Value.ToString();
+                        ws.Cells[1, i] = childDataGridView.Columns[i - 1].HeaderText;
                     }
+
+                    // storing Each row and column value to excel sheet
+                    for (int i = 0; i < childDataGridView.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < childDataGridView.Columns.Count; j++)
+                        {
+                            ws.Cells[i + 2, j + 1].NumberFormat = "@";
+                            ws.Cells[i + 2, j + 1] = childDataGridView.Rows[i].Cells[j].Value.ToString();
+                        }
+                    }
+                    // save the file
+                    ws.Activate();
+                    ws.Select();
+                    wb.SaveAs(path);
+                    wb.Close();
+
+                    excel.Quit();
+                    MessageBox.Show("Data exported successfully");
+
                 }
-                // save the file
-                wb.SaveAs(path);
-                wb.Close();
-                excel.Quit();
-                MessageBox.Show("Data exported successfully");
+
 
             }
+
+
         }
 
 

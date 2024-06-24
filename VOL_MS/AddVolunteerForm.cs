@@ -83,7 +83,7 @@ namespace VOL_MS
             conn.Close();
             // add the volunteer to the event
             conn.Open();
-            cmd = new SqlCommand("INSERT INTO " + EventName + " (V_ID, Name, Phone) VALUES ('" + V_IDBox.Text + "', '" + NameBox.Text + "', '" + PhoneBox.Text + "')", conn);
+            cmd = new SqlCommand("INSERT INTO " + EventName + " (V_ID, Name, Phone) VALUES ('" + V_IDBox.Text + "', N'" + NameBox.Text + "', '" + PhoneBox.Text + "')", conn);
             try
             {
                 cmd.ExecuteNonQuery();

@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ManageEventForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.RecoverExcel = new System.Windows.Forms.Button();
             this.AddVol = new System.Windows.Forms.Button();
             this.CheckOutAll = new System.Windows.Forms.Button();
             this.SaveRecords = new System.Windows.Forms.Button();
@@ -55,6 +56,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.RecoverExcel);
             this.panel1.Controls.Add(this.AddVol);
             this.panel1.Controls.Add(this.CheckOutAll);
             this.panel1.Controls.Add(this.SaveRecords);
@@ -64,14 +66,27 @@
             this.panel1.Size = new System.Drawing.Size(1187, 65);
             this.panel1.TabIndex = 0;
             // 
+            // RecoverExcel
+            // 
+            this.RecoverExcel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.RecoverExcel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RecoverExcel.Location = new System.Drawing.Point(0, 0);
+            this.RecoverExcel.Name = "RecoverExcel";
+            this.RecoverExcel.Size = new System.Drawing.Size(190, 65);
+            this.RecoverExcel.TabIndex = 1;
+            this.RecoverExcel.Text = "Recover From Excel";
+            this.RecoverExcel.UseVisualStyleBackColor = true;
+            this.RecoverExcel.Click += new System.EventHandler(this.RecoverExcel_Click);
+            // 
             // AddVol
             // 
             this.AddVol.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AddVol.Location = new System.Drawing.Point(817, 0);
+            this.AddVol.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.AddVol.Location = new System.Drawing.Point(715, 0);
             this.AddVol.Name = "AddVol";
-            this.AddVol.Size = new System.Drawing.Size(137, 65);
+            this.AddVol.Size = new System.Drawing.Size(183, 65);
             this.AddVol.TabIndex = 0;
-            this.AddVol.Text = "Add Volunteer";
+            this.AddVol.Text = "Add New Volunteer";
             this.AddVol.UseVisualStyleBackColor = true;
             this.AddVol.Click += new System.EventHandler(this.AddVol_Click);
             // 
@@ -79,9 +94,10 @@
             // 
             this.CheckOutAll.BackColor = System.Drawing.Color.LimeGreen;
             this.CheckOutAll.Dock = System.Windows.Forms.DockStyle.Right;
-            this.CheckOutAll.Location = new System.Drawing.Point(954, 0);
+            this.CheckOutAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.CheckOutAll.Location = new System.Drawing.Point(898, 0);
             this.CheckOutAll.Name = "CheckOutAll";
-            this.CheckOutAll.Size = new System.Drawing.Size(94, 65);
+            this.CheckOutAll.Size = new System.Drawing.Size(129, 65);
             this.CheckOutAll.TabIndex = 0;
             this.CheckOutAll.Text = "Check Out All";
             this.CheckOutAll.UseVisualStyleBackColor = false;
@@ -91,9 +107,10 @@
             // 
             this.SaveRecords.BackColor = System.Drawing.Color.LemonChiffon;
             this.SaveRecords.Dock = System.Windows.Forms.DockStyle.Right;
-            this.SaveRecords.Location = new System.Drawing.Point(1048, 0);
+            this.SaveRecords.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.SaveRecords.Location = new System.Drawing.Point(1027, 0);
             this.SaveRecords.Name = "SaveRecords";
-            this.SaveRecords.Size = new System.Drawing.Size(139, 65);
+            this.SaveRecords.Size = new System.Drawing.Size(160, 65);
             this.SaveRecords.TabIndex = 0;
             this.SaveRecords.Text = "Save Records (Excel)";
             this.SaveRecords.UseVisualStyleBackColor = false;
@@ -322,5 +339,6 @@
         private System.Windows.Forms.Label TitleLable;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox SearchActive;
+        private System.Windows.Forms.Button RecoverExcel;
     }
 }
