@@ -18,19 +18,22 @@ namespace VOL_MS
         static SqlCommand cmd;
         static SqlDataReader dr;
 
-
-
+        /// <summary>
+        /// Initializes a new instance of the AddEventForm class.
+        /// </summary>
         public AddEventForm()
         {
             InitializeComponent();
             conn = new SqlConnection(ConnectionDB.GetConnectionString());
         }
 
-
-
+        /// <summary>
+        /// Handles the click event of the SelectExcel button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The EventArgs instance containing the event data.</param>
         private void SelectExcel_Click(object sender, EventArgs e)
         {
-
             resultDataGrid.Rows.Clear();
             resultDataGrid.Refresh();
             try
@@ -104,8 +107,6 @@ namespace VOL_MS
                             continue;
                         }
                         // check if the V_ID index 1-6 are all digits
-
-
                         for (int r = 1; r < 7; r++)
                         {
                             if (!char.IsDigit(xlRange.Cells[xlRow, V_ID_Column].Text[r]))
@@ -115,13 +116,9 @@ namespace VOL_MS
                             }
                         }
                         resultDataGrid.Rows.Add(xlRange.Cells[xlRow, Name_Column].Text, xlRange.Cells[xlRow, V_ID_Column].Text, phone);
-
-
-
                     }
                     xWorkbook.Close();
                     xlApp.Quit();
-
                 }
             }
             catch (Exception ex)
@@ -130,10 +127,21 @@ namespace VOL_MS
             }
         }
 
+        /// <summary>
+        /// Handles the click event of the AddEventButton button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The EventArgs instance containing the event data.</param>
         private void AddEventButton_Click(object sender, EventArgs e)
         {
             try
             {
+                // check if the data grid is empty
+                if (resultDataGrid.Rows.Count == 0)
+                {
+                    MessageBox.Show("Please select an excel file");
+                    return;
+                }
                 // check if the event name is empty
                 if (EventName.Text == "")
                 {
@@ -185,7 +193,6 @@ namespace VOL_MS
                             {
                                 dr.Close();
                                 cmd = new SqlCommand("INSERT INTO " + EventName.Text + " (Name, Phone, V_ID) VALUES (N'" + resultDataGrid.Rows[i].Cells[0].Value + "', @Phone, @V_ID)", conn);
-                                //cmd.Parameters.AddWithValue("@Name", resultDataGrid.Rows[i].Cells[0].Value);
                                 cmd.Parameters.AddWithValue("@Phone", resultDataGrid.Rows[i].Cells[2].Value);
                                 cmd.Parameters.AddWithValue("@V_ID", resultDataGrid.Rows[i].Cells[1].Value);
                                 cmd.ExecuteNonQuery();
@@ -204,13 +211,6 @@ namespace VOL_MS
                 }
                 dr.Close();
                 conn.Close();
-                // check if the data grid is empty
-                if (resultDataGrid.Rows.Count == 0)
-                {
-                    MessageBox.Show("Please select an excel file");
-                    return;
-                }
-
 
                 if (!IsUpdate)
                 {
@@ -245,8 +245,6 @@ namespace VOL_MS
             {
                 MessageBox.Show(ex.Message);
             }
-
-
         }
     }
 }

@@ -11,7 +11,12 @@ namespace VOL_MS
         public static string GetConnectionString()
         {
             string con = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\EventsDatabase.mdf;Integrated Security=True";
+            return con;
+        }
 
+        public static string GetShitsConnectionString()
+        {
+            string con = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\ShiftsDB.mdf;Integrated Security=True";
             return con;
         }
     }

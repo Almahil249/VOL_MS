@@ -132,14 +132,6 @@ namespace VOL_MS
                 }
             }
 
-            // ShowDataForm(string tableName);
-            //close the current form and open the ShowDataForm with the name of the table that the user clicked on
-
-
-
-
-
-
         }
     }
 }

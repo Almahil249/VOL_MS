@@ -19,6 +19,8 @@ namespace VOL_MS
     public partial class ManageEventForm : Form
     {
         static SqlConnection conn;
+        static SqlConnection connShifts;
+
         static SqlCommand cmd;
         static SqlCommand cmd1;
         static SqlDataReader dr;
@@ -36,6 +38,7 @@ namespace VOL_MS
             //add  the data to the DateLable
             DateLable.Text = Now.ToString("dd/MM/yyyy");
             conn = new SqlConnection(ConnectionDB.GetConnectionString());
+            connShifts = new SqlConnection(ConnectionDB.GetShitsConnectionString());
 
         }
 
@@ -84,6 +87,62 @@ namespace VOL_MS
             dtAttendedVOL.Columns.Add("Check Out");
             AttendedGridView.DataSource = dtAttendedVOL;
 
+
+            //populate ActiveDataGrid from the "Shifts" table in the ShiftsDB database with the data of the current date and the current EventName and remove the data from the AllVolDataGrid
+            connShifts.Open();
+            cmd = new SqlCommand("SELECT COUNT(*) FROM [Shifts] WHERE [Date] = '" + Now.ToString("yyyy_MM_dd") + "' AND [EventName] = '" + EventName + "'", connShifts);
+            dr = cmd.ExecuteReader();
+            int count = 0;
+            while (dr.Read())
+            {
+                count = Convert.ToInt32(dr[0]);
+            }
+            dr.Close();
+            connShifts.Close();
+            if(count > 0)
+            {
+                System.Data.DataTable dt = new System.Data.DataTable();
+
+                connShifts.Open();
+                cmd = new SqlCommand("SELECT * FROM [Shifts] WHERE [Date] = '" + Now.ToString("yyyy_MM_dd") + "' AND [EventName] = '" + EventName + "'", connShifts);
+                dr = cmd.ExecuteReader();
+                dt.Load(dr);
+                dr.Close();
+                connShifts.Close();
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    dtActiveVOL.Rows.Add(dt.Rows[i][0].ToString(), dt.Rows[i][2].ToString(), dt.Rows[i][1].ToString(), dt.Rows[i][6].ToString(), 0, dt.Rows[i][4].ToString(), null);
+
+                }
+                // delete the dt datatable
+                dt.Clear();
+                dt.Dispose();
+
+
+                ActiveDataGrid.DataSource = dtActiveVOL;
+                for (int i = 0; i < ActiveDataGrid.Columns.Count; i++)
+                {
+                    ActiveDataGrid.Columns[i].ReadOnly = false;
+                }
+                //remove the volunteers that are in the ActiveDataGrid from the AllVolDataGrid
+
+                for (int i = 0; i < dtActiveVOL.Rows.Count; i++)
+                {
+                    for (int j = 0; j < dtAllVOL.Rows.Count; j++)
+                    {
+                        if (dtActiveVOL.Rows[i][2].ToString() == dtAllVOL.Rows[j][2].ToString())
+                        {
+                            dtAllVOL.Rows.RemoveAt(j);
+                        }
+                    }
+                }
+                AllVolDataGrid.DataSource = dtAllVOL;
+                for (int k = 0; k < AllVolDataGrid.Columns.Count; k++)
+                {
+                    AllVolDataGrid.Columns[k].ReadOnly = true;
+                }
+
+            }
 
 
 
@@ -143,6 +202,11 @@ namespace VOL_MS
                         ActiveDataGrid.Columns[i].ReadOnly = true;
                     }
                     AllVolDataGrid.Rows.RemoveAt(e.RowIndex);
+                    //insert the volunteer's data to the "Shifts" table in the ShiftsDB database
+                    connShifts.Open();
+                    cmd = new SqlCommand("INSERT INTO [Shifts] ([Name], [V_ID], [Phone], [Date], [Check IN], [EventName], [TotalHours]) VALUES (N'" + dtActiveVOL.Rows[dtActiveVOL.Rows.Count - 1][0].ToString() + "', '" + dtActiveVOL.Rows[dtActiveVOL.Rows.Count - 1][2].ToString() + "', '" + dtActiveVOL.Rows[dtActiveVOL.Rows.Count - 1][1].ToString() + "', '" + Now.ToString("yyyy_MM_dd") + "', '" + Now.ToString("HH:mm:ss") + "', '" + EventName + "', '"+ dtActiveVOL.Rows[dtActiveVOL.Rows.Count - 1][3].ToString() + "' )", connShifts);
+                    cmd.ExecuteNonQuery();
+                    connShifts.Close();
                     MessageBox.Show("Checked In!");
                     // check the EventName table in the database if the current date column exists or not
                     conn.Open();
@@ -218,6 +282,11 @@ namespace VOL_MS
                     // if rows > 0 then the update was successful
                     if (rows > 0 && rows1 > 0)
                     {
+                        //remove the volunteer from the "Shifts" table in the ShiftsDB database
+                        connShifts.Open();
+                        cmd = new SqlCommand("DELETE FROM [Shifts] WHERE [V_ID] = '" + ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString() + "' AND [Date] = '" + Now.ToString("yyyy_MM_dd") + "' AND [EventName] = '" + EventName + "'", connShifts);
+                        cmd.ExecuteNonQuery();
+                        connShifts.Close();
                         dtAttendedVOL.Rows.Add(ActiveDataGrid.Rows[e.RowIndex].Cells[1].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[2].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString(), PrevTotalHours + hours, ActiveDataGrid.Rows[e.RowIndex].Cells[5].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[6].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value.ToString());
                         AttendedGridView.DataSource = dtAttendedVOL;
                         dtActiveVOL.Rows.RemoveAt(e.RowIndex);
@@ -275,6 +344,11 @@ namespace VOL_MS
                 cmd1 = new SqlCommand(query1, conn);
                 int rows1 = cmd1.ExecuteNonQuery();
                 conn.Close();
+                //Remove the volunteer from the "Shifts" table in the ShiftsDB database
+                connShifts.Open();
+                cmd = new SqlCommand("DELETE FROM [Shifts] WHERE [V_ID] = '" + ActiveDataGrid.Rows[iRowIndex].Cells[3].Value.ToString() + "' AND [Date] = '" + Now.ToString("yyyy_MM_dd") + "' AND [EventName] = '" + EventName + "'", connShifts);
+                cmd.ExecuteNonQuery();
+                connShifts.Close();
                 //MessageBox.Show("R1:  "+rows.ToString()+ "  R2:  " + rows1.ToString());
                 //remove the volunteer from the ActiveDataGrid and add him to the AttendedGridView
                 // if rows > 0 then the update was successful
@@ -348,7 +422,7 @@ namespace VOL_MS
             ws.Select();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
-            saveFileDialog.FileName = EventName + "_" + Now.ToString("dd_MM_yyyy") + "_Shift.xlsx";
+            saveFileDialog.FileName = EventName + "_" + Now.ToString("yyyy_MM_dd") + "_Shift.xlsx";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 wb.SaveAs(saveFileDialog.FileName);
@@ -384,7 +458,7 @@ namespace VOL_MS
         // when the user closes the ManageEventForm, check if the user wants to save the data or not
         public void ManageEventForm_FormClosing()
         {
-            // check if the ActiveDataGrid is empty or not
+            /*/ check if the ActiveDataGrid is empty or not
             if (ActiveDataGrid.Rows.Count > 0)
             {
                 
@@ -401,7 +475,7 @@ namespace VOL_MS
                 }
 
 
-            }
+            }*/
         }
 
         private void RecoverExcel_Click(object sender, EventArgs e)
@@ -431,14 +505,14 @@ namespace VOL_MS
                     openFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
 
 
-                    //check if the user selected a file or not then validate the file name EventName_DD_MM_YYYY_Shift if it is valid then recover the data from the file
+                    //check if the user selected a file or not then validate the file name EventName_yyyy_MM_dd_Shift if it is valid then recover the data from the file
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         string fileName = openFileDialog.FileName;
                         // get file name without the path
                         fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
-                        //get the shift date from the file name (the date is in the format DD_MM_YYYY and it srarts from the 16th character from the end of the file name)
+                        //get the shift date from the file name (the date is in the format yyyy_MM_dd and it srarts from the 16th character from the end of the file name)
                         // Split the string by underscore
                         string[] parts = fileName.Split('_');
                         // Assuming the date is always the second to last element
@@ -451,7 +525,7 @@ namespace VOL_MS
 
 
 
-                        if (EventNameFromFile == EventName && dateFromFile == Now.ToString("dd_MM_yyyy"))
+                        if (EventNameFromFile == EventName && dateFromFile == Now.ToString("yyyy_MM_dd"))
                         {
                             try
                             {
@@ -537,7 +611,7 @@ namespace VOL_MS
                             {
                                 MessageBox.Show("The Event Name in the file does not match the current Event Name!");
                             }
-                            else if (dateFromFile != Now.ToString("dd_MM_yyyy"))
+                            else if (dateFromFile != Now.ToString("yyyy_MM_dd"))
                             {
                                 MessageBox.Show("The Date in the file does not match the current Date!");
                             }

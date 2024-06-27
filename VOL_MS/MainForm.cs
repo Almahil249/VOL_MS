@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,12 +10,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VOL_MS;
 using System.Data.SqlClient;
+using static System.DateTime;
+
 
 namespace VOL_MS
 {
     public partial class MainForm : Form
     {
         static SqlConnection conn;
+        static SqlConnection connShifts;
+
         static SqlCommand cmd;
         static SqlCommand cmd1;
         static SqlDataReader dr;
@@ -23,7 +28,8 @@ namespace VOL_MS
         {
             InitializeComponent();
             LoadChildFormIntoPanel(new HomeForm());
-            conn = new SqlConnection(ConnectionDB.GetConnectionString());            
+            conn = new SqlConnection(ConnectionDB.GetConnectionString());   
+            connShifts = new SqlConnection(ConnectionDB.GetShitsConnectionString());
         }
 
         public void LoadChildFormIntoPanel(Form childForm)
@@ -151,6 +157,105 @@ namespace VOL_MS
         private void MainForm_Load(object sender, EventArgs e)
         {
             PopulateComboBox();
+            // connect to ShiftsDB database and check if the "Shifts" table exists or not
+            connShifts.Open();
+            cmd = new SqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'Shifts'", connShifts);
+            dr = cmd.ExecuteReader();
+            int countTableShifts = 0;
+            while (dr.Read())
+            {
+                countTableShifts = Convert.ToInt32(dr[0]);
+            }
+            dr.Close();
+            connShifts.Close();
+
+            // if the "Shifts" table does not exist in the ShiftsDB database then create the "Shifts" table with Name, v_ID, Phone, Date, Check IN, EventName columns and set the Date and EventName and V_ID columns as the primary key
+            if (countTableShifts == 0)
+            {
+                connShifts.Open();
+                cmd = new SqlCommand("CREATE TABLE [Shifts] ([Name] NVARCHAR(50) NOT NULL, [V_ID] VARCHAR(50) NOT NULL, [Phone] VARCHAR(50)  NULL, [Date] VARCHAR(50) NOT NULL, [Check IN] VARCHAR(50) NOT NULL, [EventName] VARCHAR(50) NOT NULL, [TotalHours] VARCHAR(50) NOT NULL , PRIMARY KEY ([Date], [EventName], [V_ID]))", connShifts);
+                cmd.ExecuteNonQuery();
+                connShifts.Close();
+            }
+
+
+            connShifts.Open();
+            cmd = new SqlCommand("SELECT COUNT(*) FROM Shifts WHERE Date != '" + DateTime.Now.ToString("yyyy_MM_dd") + "'", connShifts);
+            dr = cmd.ExecuteReader();
+            int count = 0;
+            while (dr.Read())
+            {
+                count = Convert.ToInt32(dr[0]);
+            }
+            dr.Close();
+            connShifts.Close();
+            //create a datatable to store the records
+            DataTable dt = new DataTable();
+            // if there are records  checkout all
+
+            if (count > 0)
+            {
+                //get the records
+                connShifts.Open();
+                cmd = new SqlCommand("SELECT * FROM Shifts WHERE Date != '" + DateTime.Now.ToString("yyyy_MM_dd") + "'", connShifts);
+                dr = cmd.ExecuteReader();
+                dt.Load(dr);
+                dr.Close();
+                connShifts.Close();
+                //pop up a message box with the records
+                string message = "";
+                message = message + "There are " + count + " records in the Shifts table that belong to previous dates\n";
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    //the columns are: Name , V_ID , Phone , Date , CheckIn , EventName, TotalHours
+                    message = message + $"{i + 1})  V_ID: " + dt.Rows[i][1].ToString() + " Date: " + dt.Rows[i][3].ToString() + " EventName: " + dt.Rows[i][5].ToString() + "\n";
+
+                   // message = message + "Name: " + dt.Rows[i][0].ToString() + " V_ID: " + dt.Rows[i][1].ToString() + " Phone: " + dt.Rows[i][2].ToString() + " Date: " + dt.Rows[i][3].ToString() + " CheckIn: " + dt.Rows[i][4].ToString() + " EventName: " + dt.Rows[i][5].ToString() + "\n";
+                }
+                message = message + "\n\n And They will be Checked out with time-stamp 23:59:00 \n";
+                MessageBox.Show(message);
+                //check out all the records
+                string checkOutLast = "23:59:00";
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    // V_ID: " + dt.Rows[i][1].ToString() + " Date: " + dt.Rows[i][3].ToString() + " EventName: " + dt.Rows[i][5].ToString() + " CheckIn: " + dt.Rows[i][4].ToString() 
+                    DateTime checkIn = Convert.ToDateTime(dt.Rows[i][4].ToString());
+                    DateTime checkOut = Convert.ToDateTime(checkOutLast);
+                    TimeSpan time = checkOut - checkIn;
+                    // round the time to the nearest 3 minutes
+                    time = TimeSpan.FromMinutes(Math.Round(time.TotalMinutes / 3) * 3);
+                    float hours = (float)time.TotalHours;
+                    string query = "UPDATE [dbo].[" + dt.Rows[i][5].ToString() + "] SET [TotalHours] = [TotalHours] + " + hours + " WHERE V_ID = '" + dt.Rows[i][1].ToString() + "'";
+                    string query1 = "UPDATE [dbo].[" + dt.Rows[i][5].ToString() + "] SET [" + dt.Rows[i][3].ToString() + "] = [" + dt.Rows[i][3].ToString() + "] + " + hours + " WHERE V_ID = '" + dt.Rows[i][1].ToString() + "'";
+                    //MessageBox.Show(query+"\n"+ query1);
+                    conn.Open();
+                    cmd = new SqlCommand(query, conn);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Open();
+                    cmd1 = new SqlCommand(query1, conn);
+                    cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    //delete the record from the Shifts table
+                    connShifts.Open();
+                    cmd = new SqlCommand("DELETE FROM Shifts WHERE V_ID = '" + dt.Rows[i][1].ToString() + "' AND Date = '" + dt.Rows[i][3].ToString() + "' AND EventName = '" + dt.Rows[i][5].ToString() + "'", connShifts);
+                    int rows2 = cmd.ExecuteNonQuery();
+                    connShifts.Close();
+
+                }
+                //clear the datatable
+                dt.Clear();
+
+                
+            }
+
+
+
+
+           
+
+
         }
     }
 }

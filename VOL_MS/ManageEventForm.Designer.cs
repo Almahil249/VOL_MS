@@ -127,7 +127,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.SystemColors.Window;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(12, 91);
             this.label2.Name = "label2";
@@ -177,7 +177,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.SystemColors.Window;
+            this.label3.BackColor = System.Drawing.Color.White;
             this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(0, 368);
@@ -189,7 +189,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.SystemColors.Window;
+            this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(0, 220);
@@ -215,7 +215,7 @@
             // DateLable
             // 
             this.DateLable.AutoSize = true;
-            this.DateLable.BackColor = System.Drawing.Color.White;
+            this.DateLable.BackColor = System.Drawing.Color.Transparent;
             this.DateLable.Dock = System.Windows.Forms.DockStyle.Left;
             this.DateLable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DateLable.Location = new System.Drawing.Point(429, 0);
@@ -227,7 +227,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.BackColor = System.Drawing.Color.White;
+            this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Dock = System.Windows.Forms.DockStyle.Left;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(325, 0);
@@ -240,7 +240,7 @@
             // EventNameLable
             // 
             this.EventNameLable.AutoSize = true;
-            this.EventNameLable.BackColor = System.Drawing.Color.White;
+            this.EventNameLable.BackColor = System.Drawing.Color.Transparent;
             this.EventNameLable.Dock = System.Windows.Forms.DockStyle.Left;
             this.EventNameLable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.EventNameLable.Location = new System.Drawing.Point(285, 0);
@@ -253,7 +253,7 @@
             // TitleLable
             // 
             this.TitleLable.AutoSize = true;
-            this.TitleLable.BackColor = System.Drawing.Color.White;
+            this.TitleLable.BackColor = System.Drawing.Color.Transparent;
             this.TitleLable.Dock = System.Windows.Forms.DockStyle.Left;
             this.TitleLable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TitleLable.Location = new System.Drawing.Point(0, 0);
@@ -267,7 +267,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.BackColor = System.Drawing.SystemColors.Window;
+            this.label6.BackColor = System.Drawing.Color.Transparent;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(12, 139);
             this.label6.Name = "label6";
