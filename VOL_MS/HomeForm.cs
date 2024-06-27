@@ -106,6 +106,23 @@ namespace VOL_MS
                 // call ManageEventForm(eventName); in the same window
                 if (eventName != "" && dataGridView.Rows[e.RowIndex].Cells[0].Value != null)
                 {
+                    //check if the eventName is a table in the database
+                    conn.Open();
+                    cmd = new SqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE TABLE_NAME = '" + eventName + "'", conn);
+                    dr = cmd.ExecuteReader();
+                    int tableCount = 0;
+                    while (dr.Read())
+                    {
+                        tableCount = Convert.ToInt32(dr[0]);
+                    }
+                    dr.Close();
+                    conn.Close();
+
+                    if (tableCount == 0)
+                    {
+                        MessageBox.Show("The event does not exist in the database");
+                        return;
+                    }
                     var MainForm = (MainForm)Application.OpenForms["MainForm"];
                     MainForm.LoadChildFormIntoPanel(new ManageEventForm(eventName));
                 }

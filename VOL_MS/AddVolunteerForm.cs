@@ -37,6 +37,16 @@ namespace VOL_MS
 
         private void AddButton_Click(object sender, EventArgs e)
         {
+            if (NameBox.Text.Contains("'") || NameBox.Text.Contains("--") || NameBox.Text.Contains("/*") || NameBox.Text.Contains("*/") || NameBox.Text.Contains("-") || NameBox.Text.Contains(".") || NameBox.Text.Contains(",") || NameBox.Text.Contains("/") || NameBox.Text.Contains("\\") || NameBox.Text.Contains(":") || NameBox.Text.Contains(";") || NameBox.Text.Contains("[") || NameBox.Text.Contains("]") || NameBox.Text.Contains("(") || NameBox.Text.Contains(")") || NameBox.Text.Contains("{") || NameBox.Text.Contains("}") || NameBox.Text.Contains("<") || NameBox.Text.Contains(">") || NameBox.Text.Contains("=") || NameBox.Text.Contains("!") || NameBox.Text.Contains("@") || NameBox.Text.Contains("#") || NameBox.Text.Contains("$") || NameBox.Text.Contains("%") || NameBox.Text.Contains("^") || NameBox.Text.Contains("&") || NameBox.Text.Contains("*") || NameBox.Text.Contains("+") || NameBox.Text.Contains("~") || NameBox.Text.Contains("`") || NameBox.Text.Contains("|") || NameBox.Text.Contains("?") || NameBox.Text.Contains("'") || NameBox.Text.Contains("\""))
+            {
+                MessageBox.Show("Name is not valid");
+                return;
+            }
+            if (PhoneBox.Text.Contains("'") || PhoneBox.Text.Contains("--") || PhoneBox.Text.Contains("/*") || PhoneBox.Text.Contains("*/") || PhoneBox.Text.Contains("-") || PhoneBox.Text.Contains(".") || PhoneBox.Text.Contains(",") || PhoneBox.Text.Contains("/") || PhoneBox.Text.Contains("\\") || PhoneBox.Text.Contains(":") || PhoneBox.Text.Contains(";") || PhoneBox.Text.Contains("[") || PhoneBox.Text.Contains("]") || PhoneBox.Text.Contains("(") || PhoneBox.Text.Contains(")") || PhoneBox.Text.Contains("{") || PhoneBox.Text.Contains("}") || PhoneBox.Text.Contains("<") || PhoneBox.Text.Contains(">") || PhoneBox.Text.Contains("=") || PhoneBox.Text.Contains("!") || PhoneBox.Text.Contains("@") || PhoneBox.Text.Contains("#") || PhoneBox.Text.Contains("$") || PhoneBox.Text.Contains("%") || PhoneBox.Text.Contains("^") || PhoneBox.Text.Contains("&") || PhoneBox.Text.Contains("*") || PhoneBox.Text.Contains("+") || PhoneBox.Text.Contains("~") || PhoneBox.Text.Contains("`") || PhoneBox.Text.Contains("|") || PhoneBox.Text.Contains("?") || PhoneBox.Text.Contains("'") || PhoneBox.Text.Contains("\""))
+            {
+                MessageBox.Show("Phone is not valid");
+                return;
+            }
             // check if the user has entered a name
             if (NameBox.Text == "")
             {

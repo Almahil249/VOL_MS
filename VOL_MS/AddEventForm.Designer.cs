@@ -30,13 +30,13 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.resultDataGrid = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EventName = new System.Windows.Forms.TextBox();
             this.EventNameLabel = new System.Windows.Forms.Label();
             this.AddEventButton = new System.Windows.Forms.Button();
             this.SelectExcel = new System.Windows.Forms.Button();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.resultDataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,15 +54,42 @@
             this.Column2,
             this.Column3});
             this.resultDataGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.resultDataGrid.Location = new System.Drawing.Point(0, 250);
+            this.resultDataGrid.Location = new System.Drawing.Point(0, 237);
             this.resultDataGrid.Name = "resultDataGrid";
             this.resultDataGrid.ReadOnly = true;
             this.resultDataGrid.RowHeadersVisible = false;
             this.resultDataGrid.RowHeadersWidth = 51;
             this.resultDataGrid.RowTemplate.Height = 24;
             this.resultDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.resultDataGrid.Size = new System.Drawing.Size(817, 175);
+            this.resultDataGrid.Size = new System.Drawing.Size(1108, 464);
             this.resultDataGrid.TabIndex = 0;
+            // 
+            // Column1
+            // 
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Column1.HeaderText = "Name";
+            this.Column1.MinimumWidth = 6;
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 73;
+            // 
+            // Column2
+            // 
+            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Column2.HeaderText = "V_ID ";
+            this.Column2.MinimumWidth = 6;
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 68;
+            // 
+            // Column3
+            // 
+            this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Column3.HeaderText = "phone";
+            this.Column3.MinimumWidth = 6;
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 180;
             // 
             // EventName
             // 
@@ -104,40 +131,13 @@
             this.SelectExcel.UseVisualStyleBackColor = false;
             this.SelectExcel.Click += new System.EventHandler(this.SelectExcel_Click);
             // 
-            // Column1
-            // 
-            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Column1.HeaderText = "Name";
-            this.Column1.MinimumWidth = 6;
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 73;
-            // 
-            // Column2
-            // 
-            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Column2.HeaderText = "V_ID ";
-            this.Column2.MinimumWidth = 6;
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 68;
-            // 
-            // Column3
-            // 
-            this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Column3.HeaderText = "phone";
-            this.Column3.MinimumWidth = 6;
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 180;
-            // 
             // AddEventForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::VOL_MS.Properties.Resources.BG;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(817, 425);
+            this.ClientSize = new System.Drawing.Size(1108, 701);
             this.Controls.Add(this.SelectExcel);
             this.Controls.Add(this.AddEventButton);
             this.Controls.Add(this.EventNameLabel);

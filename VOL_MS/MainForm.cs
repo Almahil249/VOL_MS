@@ -85,6 +85,23 @@ namespace VOL_MS
             string eventName = EventsComboBox.Text;
             if (eventName != "" && EventsComboBox.Items.Contains(eventName))
             {
+                //check if the eventName is a table in the database
+                conn.Open();
+                cmd = new SqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE TABLE_NAME = '" + eventName + "'", conn);
+                dr = cmd.ExecuteReader();
+                int tableCount = 0;
+                while (dr.Read())
+                {
+                    tableCount = Convert.ToInt32(dr[0]);
+                }
+                dr.Close();
+                conn.Close();
+
+                if (tableCount == 0)
+                {
+                    MessageBox.Show("The event does not exist in the database");
+                    return;
+                }
                 LoadChildFormIntoPanel(new ManageEventForm(eventName));
             }
             else

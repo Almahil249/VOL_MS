@@ -10,8 +10,7 @@ namespace VOL_MS
     {
         public static string GetConnectionString()
         {
-            string con = @"Data Source=AL-MAHIL;Initial Catalog=Events;Integrated Security=True";
-            //string con = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database1.mdf;Integrated Security=True";
+            string con = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\EventsDatabase.mdf;Integrated Security=True";
 
             return con;
         }

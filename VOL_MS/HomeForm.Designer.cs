@@ -49,11 +49,11 @@
             this.RegesterdVolunteers,
             this.AcitiveVolunteers});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataGridView.Location = new System.Drawing.Point(0, 232);
+            this.dataGridView.Location = new System.Drawing.Point(0, 258);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.RowHeadersWidth = 51;
             this.dataGridView.RowTemplate.Height = 24;
-            this.dataGridView.Size = new System.Drawing.Size(800, 218);
+            this.dataGridView.Size = new System.Drawing.Size(1059, 310);
             this.dataGridView.TabIndex = 0;
             this.dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellContentClick);
             // 
@@ -106,7 +106,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::VOL_MS.Properties.Resources.BG;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1059, 568);
             this.Controls.Add(this.resultLable);
             this.Controls.Add(this.statLable);
             this.Controls.Add(this.dataGridView);

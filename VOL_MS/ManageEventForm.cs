@@ -130,108 +130,120 @@ namespace VOL_MS
         private void AllVolDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             //MessageBox.Show(e.RowIndex.ToString());
-
-            //if the user clicked the "Check IN" buttodd the current date and time to the "Check IN" column
-            if (e.ColumnIndex == 0 && e.RowIndex != -1)
+            try
             {
-
-                dtActiveVOL.Rows.Add(AllVolDataGrid.Rows[e.RowIndex].Cells[1].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[2].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[4].Value.ToString(), null, Now.ToString("HH:mm:ss"), null);
-                ActiveDataGrid.DataSource = dtActiveVOL;
-                for (int i = 0; i < ActiveDataGrid.Columns.Count; i++)
+                //if the user clicked the "Check IN" buttodd the current date and time to the "Check IN" column
+                if (e.ColumnIndex == 0 && e.RowIndex != -1)
                 {
-                    ActiveDataGrid.Columns[i].ReadOnly = true;
-                }
-                AllVolDataGrid.Rows.RemoveAt(e.RowIndex);
-                MessageBox.Show("Checked In!");
-                // check the EventName table in the database if the current date column exists or not
-                conn.Open();
-                cmd = new SqlCommand("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '" + EventName + "' AND column_name = '" + Now.ToString("yyyy_MM_dd") + "'", conn);
-                dr = cmd.ExecuteReader();
-                int count = 0;
-                while (dr.Read())
-                {
-                    count = Convert.ToInt32(dr[0]);
-                }
-                dr.Close();
-                conn.Close();
-                //if the current date column does not exist in the EventName table in the database
-                if (count == 0)
-                {
-                    //create new columns in the "EventName" table in the database with the current Date name format "YYYY_MM_DD" to store the Hours of the volunteers in this particular day
-                    conn.Open();
-                    cmd = new SqlCommand("ALTER TABLE [" + EventName + "] ADD [" + Now.ToString("yyyy_MM_dd") + "] float NOT NULL DEFAULT 0.0", conn);
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
 
-
-
-            }
-        }
-
-        private void ActiveDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            //MessageBox.Show("Row: " + e.RowIndex.ToString() + "Col" + e.ColumnIndex);
-            if (e.ColumnIndex == 0 && e.RowIndex != -1)
-            {
-                //add the current date and time to the "Check Out" column in the ActiveDataGrid (indix 6)
-                //and subtract the "Check IN" date and time from the "Check Out" date and time and add the result to the "Today's Hours" column  (index 4)
-                ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value = Now.ToString("HH:mm:ss");
-                DateTime checkIn = Convert.ToDateTime(ActiveDataGrid.Rows[e.RowIndex].Cells[6].Value.ToString());
-                DateTime checkOut = Convert.ToDateTime(ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value.ToString());
-                TimeSpan time = checkOut - checkIn;
-                // round the time to the nearest 3 minutes
-                time = TimeSpan.FromMinutes(Math.Round(time.TotalMinutes / 3) * 3);
-                ActiveDataGrid.Rows[e.RowIndex].Cells[5].Value = time.TotalHours.ToString();
-                float hours = (float)time.TotalHours;
-                float PrevTotalHours = (float)Convert.ToDouble(ActiveDataGrid.Rows[e.RowIndex].Cells[4].Value.ToString());
-
-                // update the "EventName" table in the database with the the particular volunteer's hours in the current date column
-                conn.Open();
-                /*
-                    UPDATE [dbo].[NSTI]
-                       SET 
-                          [TotalHours] = [TotalHours]+h
-                          ,[date] = [date]+h
-                     WHERE [V_ID] = 'vid';
-                    */
-                string query = "UPDATE [dbo].[" + EventName + "] SET [TotalHours] = [TotalHours] + " + hours + " WHERE V_ID = '" + ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString() + "'";
-                string query1 = "UPDATE [dbo].[" + EventName + "] SET [" + Now.ToString("yyyy_MM_dd") + "] = [" + Now.ToString("yyyy_MM_dd") + "] + " + hours + " WHERE V_ID = '" + ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString() + "'";
-                //MessageBox.Show(query+"\n"+ query1);
-                cmd = new SqlCommand(query, conn);
-                int rows = cmd.ExecuteNonQuery();
-                conn.Close();
-                conn.Open();
-                cmd1 = new SqlCommand(query1, conn);
-                int rows1 = cmd1.ExecuteNonQuery();
-                conn.Close();
-                //MessageBox.Show("R1:  "+rows.ToString()+ "  R2:  " + rows1.ToString());
-                //remove the volunteer from the ActiveDataGrid and add him to the AttendedGridView
-                // if rows > 0 then the update was successful
-                if (rows > 0 && rows1 > 0)
-                {
-                    dtAttendedVOL.Rows.Add(ActiveDataGrid.Rows[e.RowIndex].Cells[1].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[2].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString(), PrevTotalHours + hours, ActiveDataGrid.Rows[e.RowIndex].Cells[5].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[6].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value.ToString());
-                    AttendedGridView.DataSource = dtAttendedVOL;
-                    dtActiveVOL.Rows.RemoveAt(e.RowIndex);
+                    dtActiveVOL.Rows.Add(AllVolDataGrid.Rows[e.RowIndex].Cells[1].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[2].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString(), AllVolDataGrid.Rows[e.RowIndex].Cells[4].Value.ToString(), null, Now.ToString("HH:mm:ss"), null);
                     ActiveDataGrid.DataSource = dtActiveVOL;
                     for (int i = 0; i < ActiveDataGrid.Columns.Count; i++)
                     {
                         ActiveDataGrid.Columns[i].ReadOnly = true;
                     }
-                    for (int i = 0; i < AttendedGridView.Columns.Count; i++)
+                    AllVolDataGrid.Rows.RemoveAt(e.RowIndex);
+                    MessageBox.Show("Checked In!");
+                    // check the EventName table in the database if the current date column exists or not
+                    conn.Open();
+                    cmd = new SqlCommand("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '" + EventName + "' AND column_name = '" + Now.ToString("yyyy_MM_dd") + "'", conn);
+                    dr = cmd.ExecuteReader();
+                    int count = 0;
+                    while (dr.Read())
                     {
-                        AttendedGridView.Columns[i].ReadOnly = true;
+                        count = Convert.ToInt32(dr[0]);
                     }
-                    MessageBox.Show("Checked Out!");
-                }
-                else
-                {
-                    MessageBox.Show("Error!");
-                }
+                    dr.Close();
+                    conn.Close();
+                    //if the current date column does not exist in the EventName table in the database
+                    if (count == 0)
+                    {
+                        //create new columns in the "EventName" table in the database with the current Date name format "YYYY_MM_DD" to store the Hours of the volunteers in this particular day
+                        conn.Open();
+                        cmd = new SqlCommand("ALTER TABLE [" + EventName + "] ADD [" + Now.ToString("yyyy_MM_dd") + "] float NOT NULL DEFAULT 0.0", conn);
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
 
 
+
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
+        private void ActiveDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                //MessageBox.Show("Row: " + e.RowIndex.ToString() + "Col" + e.ColumnIndex);
+                if (e.ColumnIndex == 0 && e.RowIndex != -1)
+                {
+                    //add the current date and time to the "Check Out" column in the ActiveDataGrid (indix 6)
+                    //and subtract the "Check IN" date and time from the "Check Out" date and time and add the result to the "Today's Hours" column  (index 4)
+                    ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value = Now.ToString("HH:mm:ss");
+                    DateTime checkIn = Convert.ToDateTime(ActiveDataGrid.Rows[e.RowIndex].Cells[6].Value.ToString());
+                    DateTime checkOut = Convert.ToDateTime(ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value.ToString());
+                    TimeSpan time = checkOut - checkIn;
+                    // round the time to the nearest 3 minutes
+                    time = TimeSpan.FromMinutes(Math.Round(time.TotalMinutes / 3) * 3);
+                    ActiveDataGrid.Rows[e.RowIndex].Cells[5].Value = time.TotalHours.ToString();
+                    float hours = (float)time.TotalHours;
+                    float PrevTotalHours = (float)Convert.ToDouble(ActiveDataGrid.Rows[e.RowIndex].Cells[4].Value.ToString());
+
+                    // update the "EventName" table in the database with the the particular volunteer's hours in the current date column
+                    conn.Open();
+                    /*
+                        UPDATE [dbo].[NSTI]
+                           SET 
+                              [TotalHours] = [TotalHours]+h
+                              ,[date] = [date]+h
+                         WHERE [V_ID] = 'vid';
+                        */
+                    string query = "UPDATE [dbo].[" + EventName + "] SET [TotalHours] = [TotalHours] + " + hours + " WHERE V_ID = '" + ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString() + "'";
+                    string query1 = "UPDATE [dbo].[" + EventName + "] SET [" + Now.ToString("yyyy_MM_dd") + "] = [" + Now.ToString("yyyy_MM_dd") + "] + " + hours + " WHERE V_ID = '" + ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString() + "'";
+                    //MessageBox.Show(query+"\n"+ query1);
+                    cmd = new SqlCommand(query, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Open();
+                    cmd1 = new SqlCommand(query1, conn);
+                    int rows1 = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    //MessageBox.Show("R1:  "+rows.ToString()+ "  R2:  " + rows1.ToString());
+                    //remove the volunteer from the ActiveDataGrid and add him to the AttendedGridView
+                    // if rows > 0 then the update was successful
+                    if (rows > 0 && rows1 > 0)
+                    {
+                        dtAttendedVOL.Rows.Add(ActiveDataGrid.Rows[e.RowIndex].Cells[1].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[2].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[3].Value.ToString(), PrevTotalHours + hours, ActiveDataGrid.Rows[e.RowIndex].Cells[5].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[6].Value.ToString(), ActiveDataGrid.Rows[e.RowIndex].Cells[7].Value.ToString());
+                        AttendedGridView.DataSource = dtAttendedVOL;
+                        dtActiveVOL.Rows.RemoveAt(e.RowIndex);
+                        ActiveDataGrid.DataSource = dtActiveVOL;
+                        for (int i = 0; i < ActiveDataGrid.Columns.Count; i++)
+                        {
+                            ActiveDataGrid.Columns[i].ReadOnly = true;
+                        }
+                        for (int i = 0; i < AttendedGridView.Columns.Count; i++)
+                        {
+                            AttendedGridView.Columns[i].ReadOnly = true;
+                        }
+                        MessageBox.Show("Checked Out!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error!");
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
         }
 
@@ -394,151 +406,160 @@ namespace VOL_MS
 
         private void RecoverExcel_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Do you want to recover the data from an excel file?", "Recover Data", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
+            try
             {
-                //check if the ActiveDataGrid is empty or not
-                if (ActiveDataGrid.Rows.Count > 0)
+                DialogResult result = MessageBox.Show("Do you want to recover the data from an excel file?", "Recover Data", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
                 {
-                    DialogResult result1 = MessageBox.Show("Warning! All the current data will be lost It is recommended to Check Out All Volunteers before performing this action", "Check Out All ", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (result1 == DialogResult.Yes)
+                    //check if the ActiveDataGrid is empty or not
+                    if (ActiveDataGrid.Rows.Count > 0)
                     {
-                        CheckOutAll_Vol();
-                        MessageBox.Show("Checked Out All Volunteers!");
-                    }
-                }
-
-                // clear the data in the ActiveDataGrid 
-                dtActiveVOL.Clear();
-                ActiveDataGrid.DataSource = dtActiveVOL;
-
-                // let the user choose the excel file to recover the data from it
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
-
-
-                //check if the user selected a file or not then validate the file name EventName_DD_MM_YYYY_Shift if it is valid then recover the data from the file
-
-                if(openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string fileName = openFileDialog.FileName;
-                    // get file name without the path
-                    fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
-                    //get the shift date from the file name (the date is in the format DD_MM_YYYY and it srarts from the 16th character from the end of the file name)
-                    // Split the string by underscore
-                    string[] parts = fileName.Split('_');
-                    // Assuming the date is always the second to last element
-                    int datePartIndex = parts.Length - 4; // Adjust the index based on the fixed position of the date
-                    
-                    string EventNameFromFile = string.Join("_", parts.Take(datePartIndex));
-                    string dateFromFile = $"{parts[datePartIndex]}_{parts[datePartIndex + 1]}_{parts[datePartIndex + 2]}";
-
-
-
-
-
-                    if (EventNameFromFile == EventName && dateFromFile == Now.ToString("dd_MM_yyyy"))
-                    {
-                        try
+                        DialogResult result1 = MessageBox.Show("Warning! All the current data will be lost It is recommended to Check Out All Volunteers before performing this action", "Check Out All ", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (result1 == DialogResult.Yes)
                         {
-                            // open the excel file and read the data from the Active Volunteers sheet and the Attended Volunteers sheet
-                            //ignore the first row in each sheet because it contains the column names 
-                            //add the data from the Active Volunteers sheet to the ActiveDataGrid and dtActiveVOL
-                            // appned the data from the Attended Volunteers sheet to the AttendedGridView and dtAttendedVOL
-                            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
-                            Workbook wb = excel.Workbooks.Open(openFileDialog.FileName);
-                            Worksheet ws = (Worksheet)wb.Sheets[1];
-                            int i = 2;
-                            while (ws.Cells[i, 1].Value != null)
-                            {
-                                dtActiveVOL.Rows.Add(ws.Cells[i, 1].Value.ToString(), ws.Cells[i, 2].Value.ToString(), ws.Cells[i, 3].Value.ToString(), ws.Cells[i, 4].Value.ToString(), ws.Cells[i, 5].Value.ToString(), ws.Cells[i, 6].Value.ToString(), ws.Cells[i, 7].Value.ToString());
-                                i++;
-                            }
-                            ActiveDataGrid.DataSource = dtActiveVOL;
-                            for (int j = 0; j < ActiveDataGrid.Columns.Count; j++)
-                            {
-                                ActiveDataGrid.Columns[j].ReadOnly = true;
-                            }
+                            CheckOutAll_Vol();
+                            MessageBox.Show("Checked Out All Volunteers!");
+                        }
+                    }
 
-                            Worksheet ws1 = (Worksheet)wb.Sheets[2];
-                            i = 2;
-                            while (ws1.Cells[i, 1].Value != null)
+                    // clear the data in the ActiveDataGrid 
+                    dtActiveVOL.Clear();
+                    ActiveDataGrid.DataSource = dtActiveVOL;
+
+                    // let the user choose the excel file to recover the data from it
+                    OpenFileDialog openFileDialog = new OpenFileDialog();
+                    openFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+
+
+                    //check if the user selected a file or not then validate the file name EventName_DD_MM_YYYY_Shift if it is valid then recover the data from the file
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string fileName = openFileDialog.FileName;
+                        // get file name without the path
+                        fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
+                        //get the shift date from the file name (the date is in the format DD_MM_YYYY and it srarts from the 16th character from the end of the file name)
+                        // Split the string by underscore
+                        string[] parts = fileName.Split('_');
+                        // Assuming the date is always the second to last element
+                        int datePartIndex = parts.Length - 4; // Adjust the index based on the fixed position of the date
+
+                        string EventNameFromFile = string.Join("_", parts.Take(datePartIndex));
+                        string dateFromFile = $"{parts[datePartIndex]}_{parts[datePartIndex + 1]}_{parts[datePartIndex + 2]}";
+
+
+
+
+
+                        if (EventNameFromFile == EventName && dateFromFile == Now.ToString("dd_MM_yyyy"))
+                        {
+                            try
                             {
-                                dtAttendedVOL.Rows.Add(ws1.Cells[i, 1].Value.ToString(), ws1.Cells[i, 2].Value.ToString(), ws1.Cells[i, 3].Value.ToString(), ws1.Cells[i, 4].Value.ToString(), ws1.Cells[i, 5].Value.ToString(), ws1.Cells[i, 6].Value.ToString(), ws1.Cells[i, 7].Value.ToString());
-                                i++;
-                            }
-                            AttendedGridView.DataSource = dtAttendedVOL;
-                            for (int j = 0; j < AttendedGridView.Columns.Count; j++)
-                            {
-                                AttendedGridView.Columns[j].ReadOnly = true;
-                            }
-                            wb.Close();
-                            excel.Quit();
-                            //remove all the data that was recovered from the excel file from the AllVolDataGrid
-                            for (int j = 0; j < dtActiveVOL.Rows.Count; j++)
-                            {
-                                for (int k = 0; k < dtAllVOL.Rows.Count; k++)
+                                // open the excel file and read the data from the Active Volunteers sheet and the Attended Volunteers sheet
+                                //ignore the first row in each sheet because it contains the column names 
+                                //add the data from the Active Volunteers sheet to the ActiveDataGrid and dtActiveVOL
+                                // appned the data from the Attended Volunteers sheet to the AttendedGridView and dtAttendedVOL
+                                Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+                                Workbook wb = excel.Workbooks.Open(openFileDialog.FileName);
+                                Worksheet ws = (Worksheet)wb.Sheets[1];
+                                int i = 2;
+                                while (ws.Cells[i, 1].Value != null)
                                 {
-                                    if (dtActiveVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
+                                    dtActiveVOL.Rows.Add(ws.Cells[i, 1].Value.ToString(), ws.Cells[i, 2].Value.ToString(), ws.Cells[i, 3].Value.ToString(), ws.Cells[i, 4].Value.ToString(), ws.Cells[i, 5].Value.ToString(), ws.Cells[i, 6].Value.ToString(), ws.Cells[i, 7].Value.ToString());
+                                    i++;
+                                }
+                                ActiveDataGrid.DataSource = dtActiveVOL;
+                                for (int j = 0; j < ActiveDataGrid.Columns.Count; j++)
+                                {
+                                    ActiveDataGrid.Columns[j].ReadOnly = true;
+                                }
+
+                                Worksheet ws1 = (Worksheet)wb.Sheets[2];
+                                i = 2;
+                                while (ws1.Cells[i, 1].Value != null)
+                                {
+                                    dtAttendedVOL.Rows.Add(ws1.Cells[i, 1].Value.ToString(), ws1.Cells[i, 2].Value.ToString(), ws1.Cells[i, 3].Value.ToString(), ws1.Cells[i, 4].Value.ToString(), ws1.Cells[i, 5].Value.ToString(), ws1.Cells[i, 6].Value.ToString(), ws1.Cells[i, 7].Value.ToString());
+                                    i++;
+                                }
+                                AttendedGridView.DataSource = dtAttendedVOL;
+                                for (int j = 0; j < AttendedGridView.Columns.Count; j++)
+                                {
+                                    AttendedGridView.Columns[j].ReadOnly = true;
+                                }
+                                wb.Close();
+                                excel.Quit();
+                                //remove all the data that was recovered from the excel file from the AllVolDataGrid
+                                for (int j = 0; j < dtActiveVOL.Rows.Count; j++)
+                                {
+                                    for (int k = 0; k < dtAllVOL.Rows.Count; k++)
                                     {
-                                        dtAllVOL.Rows.RemoveAt(k);
-                                        AllVolDataGrid.DataSource = dtAllVOL;
-                                        for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                        if (dtActiveVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
                                         {
-                                            AllVolDataGrid.Columns[l].ReadOnly = true;
+                                            dtAllVOL.Rows.RemoveAt(k);
+                                            AllVolDataGrid.DataSource = dtAllVOL;
+                                            for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                            {
+                                                AllVolDataGrid.Columns[l].ReadOnly = true;
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            for (int j = 0; j < dtAttendedVOL.Rows.Count; j++)
-                            {
-                                for (int k = 0; k < dtAllVOL.Rows.Count; k++)
+                                for (int j = 0; j < dtAttendedVOL.Rows.Count; j++)
                                 {
-                                    if (dtAttendedVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
+                                    for (int k = 0; k < dtAllVOL.Rows.Count; k++)
                                     {
-                                        dtAllVOL.Rows.RemoveAt(k);
-                                        AllVolDataGrid.DataSource = dtAllVOL;
-                                        for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                        if (dtAttendedVOL.Rows[j][2].ToString() == dtAllVOL.Rows[k][2].ToString())
                                         {
-                                            AllVolDataGrid.Columns[l].ReadOnly = true;
+                                            dtAllVOL.Rows.RemoveAt(k);
+                                            AllVolDataGrid.DataSource = dtAllVOL;
+                                            for (int l = 0; l < AllVolDataGrid.Columns.Count; l++)
+                                            {
+                                                AllVolDataGrid.Columns[l].ReadOnly = true;
+                                            }
                                         }
                                     }
                                 }
+
+                                MessageBox.Show("Recovered!");
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
                             }
 
-                            MessageBox.Show("Recovered!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
 
 
-
-                    }
-                    else
-                    {
-                        if(EventNameFromFile != EventName)
-                        {
-                            MessageBox.Show("The Event Name in the file does not match the current Event Name!");
-                        }
-                        else if(dateFromFile != Now.ToString("dd_MM_yyyy"))
-                        {
-                            MessageBox.Show("The Date in the file does not match the current Date!");
                         }
                         else
                         {
-                            MessageBox.Show("Invalid File Name!");
+                            if (EventNameFromFile != EventName)
+                            {
+                                MessageBox.Show("The Event Name in the file does not match the current Event Name!");
+                            }
+                            else if (dateFromFile != Now.ToString("dd_MM_yyyy"))
+                            {
+                                MessageBox.Show("The Date in the file does not match the current Date!");
+                            }
+                            else
+                            {
+                                MessageBox.Show("Invalid File Name!");
+                            }
                         }
+
                     }
+
+
+
 
                 }
 
-
-
-
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        
         }
     }
 
